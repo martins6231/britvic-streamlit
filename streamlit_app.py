@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import io
 from prophet import Prophet
 import calendar
 from datetime import datetime
@@ -322,9 +323,12 @@ gerar_insights(df_filtrado, categoria_analise)
 with st.expander("Exportação"):
     if st.button("Exportar consolidado com previsão (.xlsx)"):
         base_export, nome_arq = exportar_consolidado(df_filtrado, previsao, categoria_analise)
+        buffer = io.BytesIO()
+        base_export.to_excel(buffer, index=False, engine='openpyxl')
+        buffer.seek(0)
         st.download_button(
             label="Download arquivo Excel",
-            data=base_export.to_excel(index=False, engine='openpyxl'),
+            data=buffer,
             file_name=nome_arq,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
